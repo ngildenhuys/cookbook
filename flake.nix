@@ -45,7 +45,7 @@
           cooklang-doctor = {
             name = "cooklang-doctor";
             enable = true;
-            entry = "cook doctor validate --strict";
+            entry = "${nixpkgs.legacyPackages.${system}.cook-cli}/bin/cook doctor validate --strict --base-path recipes";
             files = "\\.(cook)";
             types = ["file"];
             excludes = [];
