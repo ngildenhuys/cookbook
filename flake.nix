@@ -16,27 +16,17 @@
 
     forAllSystems = nixpkgs.lib.genAttrs supportedSystems;
   in {
-    packages.default = forAllSystems (system:
-      nixpkgs.legacyPackages.${system}.stdenv.mkDerivation {
-        pname = "cooklang-site";
+    packages = forAllSystems (system: {
+      default = nixpkgs.legacyPackages.${system}.stdenv.mkDerivation {
+        pname = "cookbook";
         version = "1.0";
-
         src = ./.;
-
-        buildInputs = with nixpkgs.legacyPackages.${system}; [cook-cli];
-
-        buildPhase = ''
-          mkdir -p build
-          for f in recipes/*.cook; do
-            ${nixpkgs.legacyPackages.${system}.cook-cli}/bin/cooklang $f > build/$(basename $f .cook).html
-          done
-        '';
-
         installPhase = ''
           mkdir -p $out
-          cp -r build/* $out/
+          cp -r recipes/ $out/
         '';
-      });
+      };
+    });
 
     devShell = forAllSystems (system:
       nixpkgs.legacyPackages.${system}.mkShell {
@@ -67,12 +57,14 @@
       };
     });
 
-    apps.default = forAllSystems (system: {
-      type = "app";
-      program = "${nixpkgs.legacyPackages.${system}.writeShellScript "serve-recipes" ''
-        cd ${self}
-        exec ${nixpkgs.legacyPackages.${system}.cook-cli}/bin/cook server "$@"
-      ''}";
+    apps = forAllSystems (system: {
+      default = {
+        type = "app";
+        program = "${nixpkgs.legacyPackages.${system}.writeShellScript "serve-recipes" ''
+          cd ${self}
+          exec ${nixpkgs.legacyPackages.${system}.cook-cli}/bin/cook server "$@"
+        ''}";
+      };
     });
   };
 }
