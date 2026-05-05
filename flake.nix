@@ -61,8 +61,7 @@
       default = {
         type = "app";
         program = "${nixpkgs.legacyPackages.${system}.writeShellScript "serve-recipes" ''
-          cd ${self}
-          exec ${nixpkgs.legacyPackages.${system}.cook-cli}/bin/cook server ${self.packages.${system}.default}/recipes
+          exec ${nixpkgs.legacyPackages.${system}.cook-cli}/bin/cook server ./recipes
         ''}";
       };
     });
